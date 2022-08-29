@@ -1,44 +1,93 @@
 # SSIMULACRA 2 - Structural SIMilarity Unveiling Local And Compression Related Artifacts
 
-Perceptual metric developed by Jon Sneyers (Cloudinary) in July 2022.
-Design:
+Perceptual metric developed by Jon Sneyers (Cloudinary) in July-August 2022.
+
+## Usage
+```
+ssimulacra2 original.png distorted.png
+```
+
+Returns a score in range -inf..100, which correlates to subjective visual quality scores as follows:
+
+- 30 = low quality. This corresponds to the p10 worst output of mozjpeg -quality 30.
+- 50 = medium quality. This corresponds to the average output of cjxl -q 40 or mozjpeg -quality 40, or the p10 output of cjxl -q 50 or mozjpeg -quality 60.
+- 70 = high quality. This corresponds to the average output of cjxl -q 65 or mozjpeg -quality 70, p10 output of cjxl -q 75 or mozjpeg -quality 80.
+- 90 = very high quality. Likely impossible to distinguish from the original when viewed at 1:1 from a normal viewing distance. This corresponds to the average output of mozjpeg -quality 95 or the p10 output of cjxl -q 95.
+
+
+
+## How it works
+
+SSIMULACRA 2 is based on the concept of the multi-scale structural similarity index measure (MS-SSIM),
+computed in a perceptually relevant color space, adding two other (asymmetric) error maps, and
+aggregating using two different norms.
+
 - XYB color space (X+0.5, Y, Y-B+1.0)
-- SSIM map
-- 'blockiness/ringing' map (error means distorted has edges where original is smooth)
-- 'smoothing' map (error means distorted is smooth where original has edges)
+- Three error maps:
+  - SSIM map
+  - 'blockiness/ringing' map (error means distorted has edges where original is smooth)
+  - 'smoothing/blur' map (error means distorted is smooth where original has edges)
 - Each of these error maps is computed at 6 scales (1:1 to 1:32) for each component (X,Y,B)
-- For each of these `6*3*3=54` maps, two norms are computed: 2-norm (rmse) and 4-norm
+- For each of these `6*3*3=54` maps, two norms are computed: 1-norm (mean) and 4-norm
 - A weighted sum of these `54*2=108` norms leads to the final score
 - Weights were tuned based on a large set of subjective scores for images compressed
   with JPEG, JPEG 2000, JPEG XL, WebP, AVIF, and HEIC.
 
-The weight tuning was done by running Nelder-Mead simplex search, optimizing to minimize MSE and maximize Kendall and Pearson correlation for training data consisting of 17607 subjective quality scores, validated on separate validation data consisting of 4291 scores.
+The weight tuning was done by running Nelder-Mead simplex search, optimizing to minimize MSE and to
+maximize Kendall and Pearson correlation for training data consisting of 17611 subjective quality scores,
+validated on separate validation data consisting of 4292 scores.
+
+
+Changes compared to the [original version](https://github.com/cloudinary/ssimulacra):
+
+- works in XYB color space instead of CIE Lab
+- uses 1-norm and 4-norm (instead of 1-norm and max-norm-after-downscaling)
+- penalizes both smoothing and ringing artifacts (instead of only penalizing ringing but not smoothing)
+- removed specific grid-like blockiness detection
+- tuned using a much larger set of subjective opinions (and using absolute quality scores, not just relative comparison results)
+
+
+
 
 ## Metric performance
+
+Results for just the validation set (4292 subjective scores):
+
+Metric | Kendall correlation | Spearman | Pearson |
+-- | -- | -- | --
+PSNR | 0.35089 | 0.50092 | 0.50157
+SSIM | 0.45002 | 0.62777 | 0.55710
+VMAF | 0.58799 | 0.78798 | 0.75031
+DSSIM | -0.6777 | -0.8697 | -0.8180
+Butteraugli max-norm | -0.5495 | -0.7426 | -0.6870
+Butteraugli 2-norm | -0.6226 | -0.8127 | -0.7834
+SSIMULACRA | -0.5881 | -0.7845 | -0.7808
+SSIMULACRA 2 | 0.72163 | 0.90354 | 0.89504
+
+<img src="metric_correlation-scatterplots-MCOS-validation.svg" width="100%"
+alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the validation set (4.3k images from 49 originals)">
+
 
 Results for the full dataset (almost 22k subjective scores):
 
 Metric | Kendall correlation | Spearman | Pearson |
--- | -- | -- |-- 
-PSNR | 0.349247  |0.503049 | 0.486496
-SSIM | 0.423866  |0.599765 | 0.531878
-VMAF | 0.611730  |0.809715 | 0.769437
-DSSIM | -0.63776  |-0.83518 | -0.77323
-BA-2norm | -0.65846  |-0.84847 | -0.80865
-SSIMULACRA | -0.46608  |-0.64622 | -0.64382
-SSIMULACRA 2 | 0.730667  |0.908148 | 0.884086
+-- | -- | -- | --
+PSNR | 0.34677 | 0.49926 | 0.48178
+SSIM | 0.41612 | 0.58939 | 0.52543
+VMAF | 0.61720 | 0.81549 | 0.77781
+DSSIM | -0.6392 | -0.8363 | -0.7753
+Butteraugli max-norm | -0.5852 | -0.7753 | -0.7100
+Butteraugli 2-norm | -0.6572 | -0.8461 | -0.8103
+SSIMULACRA | -0.5214 | -0.7124 | -0.6891
+SSIMULACRA 2 | 0.74185 | 0.91695 | 0.90244
 
-Results for just the validation set (4291 subjective scores):
+<img src="metric_correlation-scatterplots-MCOS-all.svg" width="100%"
+alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the full data (22k images from 250 originals)">
 
-Metric | Kendall correlation | Spearman | Pearson |
--- | -- | -- |-- 
-PSNR | 0.369410  |0.526031 | 0.525934
-SSIM | 0.465666  |0.646420 | 0.570981
-VMAF | 0.585740  |0.783494 | 0.740504
-DSSIM | -0.68036  |-0.86964 | -0.81394
-BA-2norm | -0.62880  |-0.82051 | -0.78474
-SSIMULACRA | -0.52301  |-0.71024 | -0.72711
-SSIMULACRA 2 | 0.729409  |0.905287 | 0.893949
+
+
+Computing the mean absolute error between opinion scores (on a scale of 0 to 100) and SSIMULACRA 2 results,
+on the full set the MAE is 4.274 and on the validation set the MAE is 4.470.
 
 
 ## Building
@@ -46,4 +95,5 @@ SSIMULACRA 2 | 0.729409  |0.905287 | 0.893949
 The source code of SSIMULACRA 2 is part of the `tools` of [libjxl](https://github.com/libjxl/libjxl/blob/main/tools/ssimulacra2.cc).
 
 The bash script `build_ssimulacra2` can be used to fetch the code and compile only what is needed for SSIMULACRA 2.
+
 
