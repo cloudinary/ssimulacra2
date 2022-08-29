@@ -1,16 +1,17 @@
 #!/bin/bash
 
-git clone https://github.com/libjxl/libjxl.git --recursive --shallow-submodules
-
-cd libjxl
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_DEVTOOLS=ON -G Ninja ..
+cmake ../src -G Ninja
+
 if ninja ssimulacra2
 then
-  strip tools/ssimulacra2
-  cd ../..
-  cp libjxl/build/tools/ssimulacra2 .
+  strip ssimulacra2
+  cd ..
+  cp build/ssimulacra2 .
 else
   echo "Build problem. Check for missing dependencies?"
+  echo "Try installing dependencies:"
+  echo "   sudo apt install libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build"
+
 fi

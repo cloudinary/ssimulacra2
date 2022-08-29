@@ -92,7 +92,17 @@ on the full set the MAE is 4.274 and on the validation set the MAE is 4.470.
 
 ## Building
 
-The source code of SSIMULACRA 2 is part of the `tools` of [libjxl](https://github.com/libjxl/libjxl/blob/main/tools/ssimulacra2.cc).
+Building instructions:
+```
+sudo apt install libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build
+mkdir build
+cd build
+cmake ../src -G Ninja
+ninja ssimulacra2
+```
+
+
+The source code of SSIMULACRA 2 is also part of the `tools` of [libjxl](https://github.com/libjxl/libjxl/blob/main/tools/ssimulacra2.cc).
 
 The bash script `build_ssimulacra2` can be used to fetch the code and compile only what is needed for SSIMULACRA 2.
 
