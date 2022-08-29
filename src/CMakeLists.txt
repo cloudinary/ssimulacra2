@@ -175,20 +175,11 @@ endif()
   if (NOT HWY_FOUND)
     message(FATAL_ERROR
         "Highway library (hwy) not found. Install libhwy-dev or download it "
-        "to third_party/highway from https://github.com/google/highway . "
-        "Highway is required to build JPEG XL. You can run "
-        "${PROJECT_SOURCE_DIR}/deps.sh to download this dependency.")
+        "from https://github.com/google/highway .")
   endif()
-#  find_package(Brotli)
-#  if (NOT Brotli_FOUND)
-#    message(FATAL_ERROR
-#        "Brotli not found, install brotli-dev or download brotli source code to"
-#        " third_party/brotli from https://github.com/google/brotli. You can use"
-#        " ${PROJECT_SOURCE_DIR}/deps.sh to download this dependency.")
-#  endif ()
     find_package(LCMS2 2.13)
     if ( NOT LCMS2_FOUND )
-      message(FATAL_ERROR "Please install lcms2 or run git submodule update --init")
+      message(FATAL_ERROR "Please install lcms2")
     endif ()
 
 
