@@ -101,9 +101,10 @@ cmake ../src -G Ninja
 ninja ssimulacra2
 ```
 
+or simply execute `build_ssimulacra2`.
 
 The source code of SSIMULACRA 2 is also part of the `tools` of [libjxl](https://github.com/libjxl/libjxl/blob/main/tools/ssimulacra2.cc).
 
-The bash script `build_ssimulacra2` can be used to fetch the code and compile only what is needed for SSIMULACRA 2.
+The bash script `build_ssimulacra2_from_libjxl_repo` can be used to fetch the code and compile only what is needed for SSIMULACRA 2.
 
 
