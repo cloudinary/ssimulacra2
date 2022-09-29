@@ -55,14 +55,18 @@ Results for just the validation set (4292 subjective scores):
 
 Metric | Kendall correlation | Spearman | Pearson |
 -- | -- | -- | --
-PSNR | 0.35089 | 0.50092 | 0.50157
-SSIM | 0.45002 | 0.62777 | 0.55710
-VMAF | 0.58799 | 0.78798 | 0.75031
-DSSIM | -0.6777 | -0.8697 | -0.8180
-Butteraugli max-norm | -0.5495 | -0.7426 | -0.6870
-Butteraugli 2-norm | -0.6226 | -0.8127 | -0.7834
-SSIMULACRA | -0.5881 | -0.7845 | -0.7808
-SSIMULACRA 2 | 0.72163 | 0.90354 | 0.89504
+PSNR | 0.34911 | 0.49951 | 0.50134
+SSIM | 0.45788 | 0.63796 | 0.56530
+VMAF | 0.58789 | 0.78829 | 0.75012
+DSSIM | -0.6806 | -0.8721 | -0.8219
+Butteraugli max-norm | -0.5499 | -0.7408 | -0.6832
+Butteraugli 2-norm | -0.6213 | -0.8089 | -0.7795
+SSIMULACRA | -0.5939 | -0.7912 | -0.7862
+SSIMULACRA 2 | 0.71108 | 0.89225 | 0.88503
+
+
+
+
 
 <img src="metric_correlation-scatterplots-MCOS-validation.svg" width="100%"
 alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the validation set (4.3k images from 49 originals)">
@@ -72,14 +76,15 @@ Results for the full dataset (almost 22k subjective scores):
 
 Metric | Kendall correlation | Spearman | Pearson |
 -- | -- | -- | --
-PSNR | 0.34677 | 0.49926 | 0.48178
-SSIM | 0.41612 | 0.58939 | 0.52543
-VMAF | 0.61720 | 0.81549 | 0.77781
-DSSIM | -0.6392 | -0.8363 | -0.7753
-Butteraugli max-norm | -0.5852 | -0.7753 | -0.7100
-Butteraugli 2-norm | -0.6572 | -0.8461 | -0.8103
-SSIMULACRA | -0.5214 | -0.7124 | -0.6891
-SSIMULACRA 2 | 0.74185 | 0.91695 | 0.90244
+PSNR | 0.34721 | 0.50021 | 0.48171
+SSIM | 0.41971 | 0.59406 | 0.53003
+VMAF | 0.61764 | 0.81639 | 0.77992
+DSSIM | -0.6427 | -0.8399 | -0.7813
+Butteraugli max-norm | -0.5842 | -0.7738 | -0.7073
+Butteraugli 2-norm | -0.6575 | -0.8455 | -0.8088
+SSIMULACRA | -0.5255 | -0.7174 | -0.6939
+SSIMULACRA 2 | 0.69722 | 0.88472 | 0.86514
+
 
 <img src="metric_correlation-scatterplots-MCOS-all.svg" width="100%"
 alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the full data (22k images from 250 originals)">
@@ -87,7 +92,7 @@ alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM,
 
 
 Computing the mean absolute error between opinion scores (on a scale of 0 to 100) and SSIMULACRA 2 results,
-on the full set the MAE is 4.274 and on the validation set the MAE is 4.470.
+on the full set the MAE is 5.27 and on the validation set the MAE is 4.85.
 
 
 ## Building
