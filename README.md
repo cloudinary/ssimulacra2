@@ -1,6 +1,6 @@
 # SSIMULACRA 2 - Structural SIMilarity Unveiling Local And Compression Related Artifacts
 
-Perceptual metric developed by Jon Sneyers (Cloudinary) in July-August 2022.
+Perceptual metric developed by Jon Sneyers (Cloudinary) in July-October 2022.
 
 ## Usage
 ```
@@ -24,10 +24,11 @@ aggregating using two different norms.
 
 - XYB color space (X+0.5, Y, Y-B+1.0)
 - Three error maps:
-  - SSIM map
+  - SSIM map (with a corrected SSIM formula that avoids applying gamma correction twice)
   - 'blockiness/ringing' map (error means distorted has edges where original is smooth)
   - 'smoothing/blur' map (error means distorted is smooth where original has edges)
 - Each of these error maps is computed at 6 scales (1:1 to 1:32) for each component (X,Y,B)
+- Downscaling is done in linear color (i.e. the perceptually correct way)
 - For each of these `6*3*3=54` maps, two norms are computed: 1-norm (mean) and 4-norm
 - A weighted sum of these `54*2=108` norms leads to the final score
 - Weights were tuned based on a large set of subjective scores for images compressed
@@ -41,6 +42,8 @@ validated on separate validation data consisting of 4292 scores.
 Changes compared to the [original version](https://github.com/cloudinary/ssimulacra):
 
 - works in XYB color space instead of CIE Lab
+- linear downscaling
+- fixed SSIM formula
 - uses 1-norm and 4-norm (instead of 1-norm and max-norm-after-downscaling)
 - penalizes both smoothing and ringing artifacts (instead of only penalizing ringing but not smoothing)
 - removed specific grid-like blockiness detection
@@ -62,9 +65,7 @@ DSSIM | -0.6806 | -0.8721 | -0.8219
 Butteraugli max-norm | -0.5499 | -0.7408 | -0.6832
 Butteraugli 2-norm | -0.6213 | -0.8089 | -0.7795
 SSIMULACRA | -0.5939 | -0.7912 | -0.7862
-SSIMULACRA 2 | 0.71108 | 0.89225 | 0.88503
-
-
+SSIMULACRA 2 | 0.70330 | 0.88541 | 0.87448
 
 
 
@@ -83,7 +84,8 @@ DSSIM | -0.6427 | -0.8399 | -0.7813
 Butteraugli max-norm | -0.5842 | -0.7738 | -0.7073
 Butteraugli 2-norm | -0.6575 | -0.8455 | -0.8088
 SSIMULACRA | -0.5255 | -0.7174 | -0.6939
-SSIMULACRA 2 | 0.69722 | 0.88472 | 0.86514
+SSIMULACRA 2 | 0.69339 | 0.88203 | 0.86007
+
 
 
 <img src="metric_correlation-scatterplots-MCOS-all.svg" width="100%"
@@ -92,7 +94,7 @@ alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM,
 
 
 Computing the mean absolute error between opinion scores (on a scale of 0 to 100) and SSIMULACRA 2 results,
-on the full set the MAE is 5.27 and on the validation set the MAE is 4.85.
+on the full set the MAE is 5.32 and on the validation set the MAE is 4.97.
 
 
 ## Building
