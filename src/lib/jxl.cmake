@@ -190,6 +190,7 @@ target_include_directories(jxl_enc-obj PUBLIC
   ${PROJECT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   $<TARGET_PROPERTY:hwy,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:lcms2,INTERFACE_INCLUDE_DIRECTORIES>
 #  $<TARGET_PROPERTY:brotlicommon-static,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_compile_definitions(jxl_enc-obj PUBLIC
