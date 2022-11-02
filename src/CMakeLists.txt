@@ -22,6 +22,7 @@ if(POLICY CMP0083)
 endif()
 
 project(LIBJXL LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 11)
 
 include(CheckCXXSourceCompiles)
 check_cxx_source_compiles(
