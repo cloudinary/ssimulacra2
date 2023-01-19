@@ -12,6 +12,6 @@ then
 else
   echo "Build problem. Check for missing dependencies?"
   echo "Try installing dependencies:"
-  echo "   sudo apt install libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build"
+  echo "   sudo apt install build-essential libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build"
 
 fi

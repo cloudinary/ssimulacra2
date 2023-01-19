@@ -99,16 +99,18 @@ on the full set the MAE is 5.32 and on the validation set the MAE is 4.97.
 
 ## Building
 
-Building instructions:
+Building instructions for Debian:
 ```
-sudo apt install libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build
+sudo apt install build-essential git libhwy-dev liblcms2-dev libjpeg62-turbo-dev libpng-dev cmake ninja-build
 mkdir build
 cd build
 cmake ../src -G Ninja
 ninja ssimulacra2
 ```
 
-or simply execute `build_ssimulacra2`.
+or simply execute `build_ssimulacra2`. Other distributions should be similar;
+you may need to use `libjpeg-turbo8-dev` instead of `libjpeg62-turbo-dev`.
+Version 2.13 of lcms2 is needed.
 
 The source code of SSIMULACRA 2 is also part of the `tools` of [libjxl](https://github.com/libjxl/libjxl/blob/main/tools/ssimulacra2.cc).
 
