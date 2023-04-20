@@ -1,6 +1,6 @@
 # SSIMULACRA 2 - Structural SIMilarity Unveiling Local And Compression Related Artifacts
 
-Perceptual metric developed by Jon Sneyers (Cloudinary) in July-October 2022.
+Perceptual metric developed by Jon Sneyers (Cloudinary) in July-October 2022, updated in April 2023.
 
 ## Usage
 ```
@@ -22,7 +22,7 @@ SSIMULACRA 2 is based on the concept of the multi-scale structural similarity in
 computed in a perceptually relevant color space, adding two other (asymmetric) error maps, and
 aggregating using two different norms.
 
-- XYB color space (X+0.5, Y, Y-B+1.0)
+- XYB color space (rescaled to a 0..1 range and with B-Y)
 - Three error maps:
   - SSIM map (with a corrected SSIM formula that avoids applying gamma correction twice)
   - 'blockiness/ringing' map (error means distorted has edges where original is smooth)
@@ -31,15 +31,44 @@ aggregating using two different norms.
 - Downscaling is done in linear color (i.e. the perceptually correct way)
 - For each of these `6*3*3=54` maps, two norms are computed: 1-norm (mean) and 4-norm
 - A weighted sum of these `54*2=108` norms leads to the final score
-- Weights were tuned based on a large set of subjective scores for images compressed
-  with JPEG, JPEG 2000, JPEG XL, WebP, AVIF, and HEIC.
+- Weights were tuned based on a large set of subjective scores (CID22, TID2013, Kadid10k, KonFiG-IQA),
+  including images compressed with JPEG, JPEG 2000, JPEG XL, WebP, AVIF, HEIC, and various artificial distortions.
+
+
+Final results after tuning:
+
+SSIMULACRA 2.1:
+
+Dataset | KRCC | SRCC | PCC |
+-- | -- | -- | --
+CID22|     0.6903 | 0.8805 | 0.8583
+TID2013|   0.6590 | 0.8445 | 0.8471
+KADID-10k| 0.6175 | 0.8133 | 0.8030
+KonFiG(F)| 0.7668 | 0.9194 | 0.9136
+
+SSIMULACRA 2.0:
+
+Dataset | KRCC | SRCC | PCC |
+-- | -- | -- | --
+CID22|      0.6934 | 0.8820 | 0.8601
+TID2013|    0.6322 | 0.8194 | 0.8103
+KADID-10k|  0.5870 | 0.7851 | 0.7018
+KonFiG(F)|  0.7813 | 0.9280 | 0.8710
+
+
 
 The weight tuning was done by running Nelder-Mead simplex search, optimizing to minimize MSE and to
-maximize Kendall and Pearson correlation for training data consisting of 17611 subjective quality scores,
-validated on separate validation data consisting of 4292 scores.
+maximize Kendall and Pearson correlation for training data consisting of the CID22 training data,
+TID2013, KADID-10k and KonFiG (F boosting).
+
+Changes compared to SSIMULACRA 2.0:
+
+- weights retuned to correlate better with other datasets
+- changed the range of the 3 components to ensure they are in 0..1 so the SSIM formula makes sense
+- added a polynomial remapping of the error score to allow a better fit to datasets with higher distortions
 
 
-Changes compared to the [original version](https://github.com/cloudinary/ssimulacra):
+Changes compared to the [original version (SSIMULACRA 1)](https://github.com/cloudinary/ssimulacra):
 
 - works in XYB color space instead of CIE Lab
 - linear downscaling
@@ -54,47 +83,90 @@ Changes compared to the [original version](https://github.com/cloudinary/ssimula
 
 ## Metric performance
 
-Results for just the validation set (4292 subjective scores):
 
-Metric | Kendall correlation | Spearman | Pearson |
+These tables show the correlation of various metrics in terms of
+Kendall Rank Correlation Coefficient (KRCC),
+Spearman Rank Correlation Coefficient (SRCC),
+and Pearson Correlation Coefficient (PCC), for various IQA datasets.
+
+TID2013:
+
+Metric | KRCC | SRCC | PCC |
 -- | -- | -- | --
-PSNR | 0.34911 | 0.49951 | 0.50134
-SSIM | 0.45788 | 0.63796 | 0.56530
-VMAF | 0.58789 | 0.78829 | 0.75012
-DSSIM | -0.6806 | -0.8721 | -0.8219
-Butteraugli max-norm | -0.5499 | -0.7408 | -0.6832
-Butteraugli 2-norm | -0.6213 | -0.8089 | -0.7795
-SSIMULACRA | -0.5939 | -0.7912 | -0.7862
-SSIMULACRA 2 | 0.70330 | 0.88541 | 0.87448
+PSNR-Y | 0.4699 | 0.6394 | 0.428
+PSNR-HVS | 0.5464 | 0.698 | 0.6846
+SSIM | 0.5707 | 0.7552 | 0.764
+MS-SSIM | 0.6068 | 0.7868 | 0.7802
+VMAF | 0.5608 | 0.7439 | 0.7728
+SSIMULACRA 2 | 0.6322 | 0.8194 | 0.8103
+SSIMULACRA 2.1 | 0.659 | 0.8445 | 0.8471
+DSSIM | -0.6984 | -0.871 | -0.8021
+Butteraugli (3-norm) | -0.4935 | -0.6639 | -0.4878
+PSNR (ImageMagick) | 0.4958 | 0.6869 | 0.6601
 
+KADID-10k:
 
-
-<img src="metric_correlation-scatterplots-MCOS-validation.svg" width="100%"
-alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the validation set (4.3k images from 49 originals)">
-
-
-Results for the full dataset (almost 22k subjective scores):
-
-Metric | Kendall correlation | Spearman | Pearson |
+Metric | KRCC | SRCC | PCC |
 -- | -- | -- | --
-PSNR | 0.34721 | 0.50021 | 0.48171
-SSIM | 0.41971 | 0.59406 | 0.53003
-VMAF | 0.61764 | 0.81639 | 0.77992
-DSSIM | -0.6427 | -0.8399 | -0.7813
-Butteraugli max-norm | -0.5842 | -0.7738 | -0.7073
-Butteraugli 2-norm | -0.6575 | -0.8455 | -0.8088
-SSIMULACRA | -0.5255 | -0.7174 | -0.6939
-SSIMULACRA 2 | 0.69339 | 0.88203 | 0.86007
+PSNR-Y | 0.4555 | 0.6319 | 0.5932
+PSNR-HVS | 0.4229 | 0.5927 | 0.5949
+SSIM | 0.5889 | 0.7806 | 0.6576
+MS-SSIM | 0.6466 | 0.8359 | 0.6836
+VMAF | 0.5343 | 0.7253 | 0.7185
+SSIMULACRA 2 | 0.587 | 0.7851 | 0.7018
+SSIMULACRA 2.1 | 0.6175 | 0.8133 | 0.803
+DSSIM | -0.6679 | -0.8561 | -0.6544
+Butteraugli (3-norm) | -0.3846 | -0.543 | -0.4424
+PSNR (ImageMagick) | 0.4876 | 0.6757 | 0.6214
 
 
+KonFiG-IQA: (Experiment I, F boosting, clamping negative JND (better than reference) to zero)
 
-<img src="metric_correlation-scatterplots-MCOS-all.svg" width="100%"
-alt="2D histograms showing correlation between metrics (PSNR, SSIM, VMAF, DSSIM, Butteraugli (max-norm and 2-norm), SSIMULACRA (v1 and v2) and subjective scores on the full data (22k images from 250 originals)">
+Metric | KRCC | SRCC | PCC |
+-- | -- | -- | --
+PSNR-Y | 0.5871 | 0.7598 | 0.6968 |
+PSNR-HVS | 0.7798 | 0.9277 | 0.8453 |
+SSIM | 0.6156 | 0.7795 | 0.7052 |
+MS-SSIM | 0.6635 | 0.8299 | 0.6834 |
+VMAF | 0.3866 | 0.4906 | 0.463 |
+SSIMULACRA 2 | 0.7813 | 0.928 | 0.871 |
+SSIMULACRA 2.1 | 0.7668 | 0.9194 | 0.9136 |
+DSSIM | -0.7595 | -0.9147 | -0.673 |
+Butteraugli (3-norm) | -0.771 | -0.9238 | -0.7587 |
+PSNR (ImageMagick) | 0.6531 | 0.8248 | 0.7218 |
 
 
+CID22 full set: (22k subjective scores)
 
-Computing the mean absolute error between opinion scores (on a scale of 0 to 100) and SSIMULACRA 2 results,
-on the full set the MAE is 5.32 and on the validation set the MAE is 4.97.
+Metric | KRCC | SRCC | PCC |
+-- | -- | -- | --
+PSNR-Y | 0.4452 | 0.6246 | 0.5901
+PSNR-HVS | 0.6076 | 0.81 | 0.7559
+SSIM | 0.5628 | 0.7577 | 0.7005
+MS-SSIM | 0.5596 | 0.7551 | 0.7035
+VMAF | 0.6176 | 0.8163 | 0.7799
+SSIMULACRA 2 | 0.6934 | 0.882 | 0.8601
+SSIMULACRA 2.1 | 0.6903 | 0.8805 | 0.8583
+DSSIM | -0.6428 | -0.8399 | -0.7813
+Butteraugli 3-norm | -0.6547 | -0.8387 | -0.7903
+PSNR (ImageMagick) | 0.3472 | 0.5002 | 0.4817
+
+
+CID22 validation set: (4292 subjective scores, not used for tuning)
+
+Metric | KRCC | SRCC | PCC |
+-- | -- | -- | --
+PSNR-Y | 0.4734 | 0.6577 | 0.6354
+PSNR-HVS | 0.6199 | 0.8224 | 0.7848
+SSIM | 0.6028 | 0.7871 | 0.7647
+MS-SSIM | 0.5915 | 0.7781 | 0.7601
+VMAF | 0.588 | 0.7884 | 0.7502
+SSIMULACRA 2 | 0.7033 | 0.8854 | 0.8745
+SSIMULACRA 2.1 | 0.7077 | 0.8904 | 0.8787
+DSSIM | -0.6807 | -0.8722 | -0.822
+Butteraugli 3-norm | -0.6102 | -0.7938 | -0.745
+PSNR (ImageMagick) | 0.3491 | 0.4995 | 0.5013
+
 
 
 ## Building
