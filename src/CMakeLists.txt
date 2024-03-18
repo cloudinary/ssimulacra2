@@ -170,6 +170,11 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   endif()
 endif()
 
+if (CXX_NO_RTTI_SUPPORTED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 
   find_package(HWY 0.15.0)

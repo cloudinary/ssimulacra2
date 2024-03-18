@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file.
 
 #include <stdio.h>
+#include <hwy/targets.h>
 
 #include "lib/extras/codec.h"
 #include "lib/jxl/color_management.h"
@@ -11,6 +12,22 @@
 #include "ssimulacra2.h"
 
 int PrintUsage(char **argv) {
+  std::string config;
+
+  bool saw_target = false;
+  config += "[";
+  for (const uint32_t target : hwy::SupportedAndGeneratedTargets()) {
+    config += hwy::TargetName(target);
+    config += ',';
+    saw_target = true;
+  }
+  if (!saw_target) {
+    config += "no targets found,";
+  }
+  config.resize(config.size() - 1);  // remove trailing comma
+  config += "]";
+
+  fprintf(stderr, "SSIMULACRA 2.1 %s\n", config.c_str());
   fprintf(stderr, "Usage: %s orig.png distorted.png\n", argv[0]);
   fprintf(stderr,
           "Returns a score in range -inf..100, which correlates to subjective "
@@ -39,6 +56,8 @@ int PrintUsage(char **argv) {
 int main(int argc, char **argv) {
   if (argc != 3)
     return PrintUsage(argv);
+
+
 
   jxl::CodecInOut io1;
   jxl::CodecInOut io2;
