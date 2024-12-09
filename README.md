@@ -9,10 +9,31 @@ ssimulacra2 original.png distorted.png
 
 Returns a score in range -inf..100, which correlates to subjective visual quality scores as follows:
 
-- 30 = low quality. This corresponds to the p10 worst output of mozjpeg -quality 30.
-- 50 = medium quality. This corresponds to the average output of cjxl -q 40 or mozjpeg -quality 40, or the p10 output of cjxl -q 50 or mozjpeg -quality 60.
-- 70 = high quality. This corresponds to the average output of cjxl -q 65 or mozjpeg -quality 70, p10 output of cjxl -q 75 or mozjpeg -quality 80.
-- 90 = very high quality. Likely impossible to distinguish from the original when viewed at 1:1 from a normal viewing distance. This corresponds to the average output of mozjpeg -quality 95 or the p10 output of cjxl -q 95.
+- negative scores: extremely low quality, very strong distortion.
+- 10 = very low quality.
+  MOS score close to 1 ('bad') in a BT.500 ACR test. Very obvious and annoying artifacts.
+  This corresponds to the typical output of `cjxl -d 14` / `-q 12` or libjpeg-turbo 4:2:0 quality 14.
+- 30 = low quality.
+  MOS score around 2 ('poor') in a BT.500 ACR test. Obvious and annoying artifacts.
+  This corresponds to the typical output of `cjxl -d 9` / `-q 20` or libjpeg-turbo 4:2:0 quality 20.
+- 50 = medium quality.
+  MOS score around 3 ('fair') in a BT.500 ACR test. Slightly annoying artifacts.
+  This corresponds to the typical output of `cjxl -d 5` / `-q 45` or libjpeg-turbo 4:2:0 quality 35.
+- 70 = high quality.
+  MOS score around 4 ('good') in a BT.500 ACR test. Artifacts are perceptible, but not annoying.
+  Distortion barely noticeable by an average observer in a side-by-side comparison at 1:1 from a normal viewing distance.
+  Without reference to the original image, an average observer does not notice artifacts.
+  This corresponds to the typical output of `cjxl -d 2.5` / `-q 73` or libjpeg-turbo 4:2:0 quality 70.
+- 80 = very high quality.
+  Distortion not noticeable by an average observer in a side-by-side comparison at 1:1 from a normal viewing distance.
+  This corresponds to the typical output of `cjxl -d 1.5` / `-q 85` or libjpeg-turbo 4:2:2 quality 85.
+- 85 = excellent quality. 
+  Distortion not noticeable by an average observer in the condition of in-place comparison at 1:1 from a normal viewing distance.
+  This corresponds to the typical output of `cjxl -d 1` / `-q 90` or libjpeg-turbo 4:4:4 quality 90.
+- 90 = visually lossless.
+  Distortion not noticeable by an average observer in a flicker test at 1:1 from a normal viewing distance.
+  This corresponds to the typical output of `cjxl -d 0.5` / `-q 95` or libjpeg-turbo 4:4:4 quality 95.
+- 100 = mathematically lossless.
 
 
 
